@@ -3,10 +3,11 @@ from sqlmodel import SQLModel
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routers.usuario_router import router as articulo_router
-from .routers.organizacion_router import router as proveedor_router
+from .routers.organizacion_router import router as organizacion_router
 from .routers.evento_router import router as evento_router
+from .routers.suscripcion_router import router as suscripcion_router
 from .database import engine
-from .models.modelos import Usuario, Organizacion, Evento
+from .models import anidados, eventos_modelo, organizacion_modelo, suscripcion_modelo, usuario_modelo
 
 
 app = FastAPI()
@@ -14,8 +15,9 @@ app = FastAPI()
 app.title = "Practico 7 - Tablas Relacionadas"
 
 app.include_router(articulo_router)
-app.include_router(proveedor_router)
+app.include_router(organizacion_router)
 app.include_router(evento_router)
+app.include_router(suscripcion_router)
 
 app.add_middleware(
     CORSMiddleware,
