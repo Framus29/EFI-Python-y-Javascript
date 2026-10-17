@@ -10,7 +10,7 @@ class OrganizacionBase(SQLModel):
 class Organizacion(OrganizacionBase, table = True):
     id: int | None = Field(default = None, primary_key = True)
     evento: list["Evento"] | None = Relationship(back_populates = "organizacion")
-    usuario: list["Usuario"] | None = Relationship(back_populates = "organizacion")
+    suscripcion: list["Suscripcion"] | None = Relationship(back_populates = "organizacion")
 
 
 class OrganizacionCreate(OrganizacionBase):

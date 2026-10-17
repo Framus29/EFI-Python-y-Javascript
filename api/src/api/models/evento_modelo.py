@@ -17,6 +17,7 @@ class EventoBase(SQLModel):
 class Evento(EventoBase, table = True):
     id: int | None = Field(default = None, primary_key = True)
     organizacion: Organizacion | None = Relationship(back_populates = "evento")
+    entradas_vendidas: int = 0
 
 
 class EventoCreate(EventoBase):
