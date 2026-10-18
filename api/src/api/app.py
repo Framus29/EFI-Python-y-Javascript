@@ -7,7 +7,7 @@ from .routers.organizacion_router import router as organizacion_router
 from .routers.evento_router import router as evento_router
 from .routers.suscripcion_router import router as suscripcion_router
 from .database import engine
-from .models import anidados, eventos_modelo, organizacion_modelo, suscripcion_modelo, usuario_modelo
+from .models import anidados, evento_modelo, organizacion_modelo, suscripcion_modelo, usuario_modelo
 
 
 app = FastAPI()
