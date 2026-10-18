@@ -9,7 +9,7 @@ from ..schemas.esquemas import PARAMETROS_ID
 router = APIRouter(prefix = "/usuarios", tags = ["usuarios"])
 
 
-@router.get("/", response_model = list[anidados.UsuarioNested])
+@router.get("/", response_model = list[usuario_modelo.UsuarioPublic])
 def mostrar_database_usuario(db: Session = Depends(get_db)):
     return db.exec(select(usuario_modelo.Usuario)).all()
 
@@ -20,16 +20,16 @@ def mostrar_usuario(id: PARAMETROS_ID, db: Session = Depends(get_db)):
     usuario_buscado = db.exec(select(usuario_modelo.Usuario).where(usuario_modelo.Usuario.id == id)).first()
 
     if usuario_buscado is None:
-        raise HTTPException(status_code = 404, detail = "el id no coincide con el de ningun usuario")
+        raise HTTPException(status_code = 404, detail = "el id no coincide con ningun usuario")
 
     return usuario_buscado
 
 
-@router.post("/", response_model = usuario_modelo.UsuarioCreate)
+@router.post("/", response_model = usuario_modelo.UsuarioPublic)
 def crear_usuario(nuevo_usuario: usuario_modelo.UsuarioCreate, db: Session = Depends(get_db)):
 
     if db.exec(select(usuario_modelo.Usuario).where(usuario_modelo.Usuario.nombre == nuevo_usuario.nombre)).first():
-        raise HTTPException(status_code = 400, detail = "el nombre del usuario ya existe")
+        raise HTTPException(status_code = 400, detail = "el nombre de usuario ya existe")
 
     db_usuario = usuario_modelo.Usuario.model_validate(nuevo_usuario)
     db.add(db_usuario)
@@ -39,7 +39,7 @@ def crear_usuario(nuevo_usuario: usuario_modelo.UsuarioCreate, db: Session = Dep
     return db_usuario
 
 
-@router.put("/{id}", response_model = usuario_modelo.Usuario)
+@router.put("/{id}", response_model = usuario_modelo.UsuarioPublic)
 def actualizar_usuario(id: PARAMETROS_ID, usuario_actualizado: usuario_modelo.UsuarioCreate, db: Session = Depends(get_db)):
 
     usuario = db.exec(select(usuario_modelo.Usuario).where(usuario_modelo.Usuario.id == id)).first()

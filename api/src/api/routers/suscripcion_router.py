@@ -10,7 +10,7 @@ from ..schemas.esquemas import PARAMETROS_ID
 router = APIRouter(prefix = "/suscripciones", tags = ["suscripciones"])
 
 
-@router.get("/", response_model = list[anidados.SuscripcionNested])
+@router.get("/", response_model = list[anidados.SuscripcionPublic])
 def mostrar_database_suscripcion(db: Session = Depends(get_db)):
     return db.exec(select(suscripcion_modelo.Suscripcion)).all()
 
@@ -30,10 +30,10 @@ def mostrar_suscripcion(id: PARAMETROS_ID, db: Session = Depends(get_db)):
 def crear_suscripcion(nueva_suscripcion: suscripcion_modelo.SuscripcionCreate, db: Session = Depends(get_db)):
 
     if not db.exec(select(usuario_modelo.Usuario).where(usuario_modelo.Usuario.id == nueva_suscripcion.usuario_id)).first():
-        raise HTTPException(status_code = 400, detail = "ese usuario no existe")
+        raise HTTPException(status_code = 400, detail = "ese id de usuario no existe")
 
     if not db.exec(select(organizacion_modelo.Organizacion).where(organizacion_modelo.Organizacion.id == nueva_suscripcion.organizacion_id)).first():
-        raise HTTPException(status_code = 400, detail = "esa organizacion no existe")
+        raise HTTPException(status_code = 400, detail = "ese id de organizacion no existe")
 
     db_suscripcion = suscripcion_modelo.Suscripcion.model_validate(nueva_suscripcion)
 
@@ -55,7 +55,7 @@ def borrar_suscripcion(id: PARAMETROS_ID, db: Session = Depends(get_db)):
     suscripcion = db.exec(select(suscripcion_modelo.Suscripcion).where(suscripcion_modelo.Suscripcion.id == id)).first()
 
     if suscripcion is None:
-        raise HTTPException(status_code = 404, detail = "el id no coincide con ningun suscripcion")
+        raise HTTPException(status_code = 404, detail = "el id no coincide con ninguna suscripcion")
 
     db.delete(suscripcion)
     db.commit()
