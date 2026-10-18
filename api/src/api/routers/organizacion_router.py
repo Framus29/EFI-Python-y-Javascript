@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
 from ..database import get_db
 
-from ..models import organizacion_modelo, anidados
+from ..models import organizacion_modelo, anidados, evento_modelo, suscripcion_modelo
 from ..schemas.esquemas import PARAMETROS_ID
 
 
@@ -28,11 +28,11 @@ def mostrar_organizacion(id: PARAMETROS_ID, db: Session = Depends(get_db)):
 @router.post("/", response_model = organizacion_modelo.OrganizacionPublic)
 def crear_organizacion(nuevo_organizacion: organizacion_modelo.OrganizacionCreate, db: Session = Depends(get_db)):
 
+    db_organizacion = organizacion_modelo.Organizacion.model_validate(nuevo_organizacion)
+    
     if db.exec(select(organizacion_modelo.Organizacion).where(organizacion_modelo.Organizacion.nombre == nuevo_organizacion.nombre)).first():
         raise HTTPException(status_code = 400, detail = "el nombre de la organizacion ya existe")
 
-    db_organizacion = organizacion_modelo.Organizacion.model_validate(nuevo_organizacion)
-    
     db.add(db_organizacion)
     db.commit()
     db.refresh(db_organizacion)
@@ -60,9 +60,16 @@ def actualizar_organizacion(id: PARAMETROS_ID, organizacion_actualizado: organiz
 def borrar_organizacion(id: PARAMETROS_ID, db: Session = Depends(get_db)):
 
     organizacion = db.exec(select(organizacion_modelo.Organizacion).where(organizacion_modelo.Organizacion.id == id)).first()
+    eventos_de_la_organizacion = db.exec(select(evento_modelo.Evento).where(evento_modelo.Evento.organizacion_id == id))
+    suscriptores_de_la_organizacion = db.exec(select(suscripcion_modelo.Suscripcion).where(suscripcion_modelo.Suscripcion.organizacion_id == id))
 
     if organizacion is None:
         raise HTTPException(status_code = 404, detail = "el id no coincide con ninguna organizacion")
+
+    for evento in eventos_de_la_organizacion:
+        db.delete(evento)
+    for suscripcion in suscriptores_de_la_organizacion:
+        db.delete(suscripcion)
 
     db.delete(organizacion)
     db.commit()

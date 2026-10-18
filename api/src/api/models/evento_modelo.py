@@ -26,3 +26,4 @@ class EventoCreate(EventoBase):
 
 class EventoPublic(EventoBase):
     id: int
+    entradas_vendidas: int

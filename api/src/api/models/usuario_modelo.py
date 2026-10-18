@@ -22,3 +22,4 @@ class UsuarioCreate(UsuarioBase):
 
 class UsuarioPublic(UsuarioBase):
     id: int
+    rol: str

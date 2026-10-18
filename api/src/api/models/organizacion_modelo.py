@@ -4,7 +4,7 @@ from ..schemas.esquemas import PARAMETROS_NOMBRE
 
 
 class OrganizacionBase(SQLModel):
-    nombre: str = PARAMETROS_NOMBRE
+    nombre: PARAMETROS_NOMBRE
 
 
 class Organizacion(OrganizacionBase, table = True):

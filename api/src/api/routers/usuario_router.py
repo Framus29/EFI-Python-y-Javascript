@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
 from ..database import get_db
 
-from ..models import usuario_modelo, anidados
+from ..models import usuario_modelo, anidados, suscripcion_modelo
 from ..schemas.esquemas import PARAMETROS_ID
 
 
@@ -29,7 +29,10 @@ def mostrar_usuario(id: PARAMETROS_ID, db: Session = Depends(get_db)):
 def crear_usuario(nuevo_usuario: usuario_modelo.UsuarioCreate, db: Session = Depends(get_db)):
 
     if db.exec(select(usuario_modelo.Usuario).where(usuario_modelo.Usuario.nombre == nuevo_usuario.nombre)).first():
-        raise HTTPException(status_code = 400, detail = "el nombre de usuario ya existe")
+        raise HTTPException(status_code = 400, detail = "el nombre de usuario ya esta en uso")
+
+    if db.exec(select(usuario_modelo.Usuario).where(usuario_modelo.Usuario.email == nuevo_usuario.email)).first():
+        raise HTTPException(status_code = 400, detail = "el email ya esta en uso")
 
     db_usuario = usuario_modelo.Usuario.model_validate(nuevo_usuario)
     db.add(db_usuario)
@@ -46,6 +49,12 @@ def actualizar_usuario(id: PARAMETROS_ID, usuario_actualizado: usuario_modelo.Us
 
     if not usuario:
         raise HTTPException(status_code = 404, detail = "el id no coincide con ningun usuario")
+    
+    if db.exec(select(usuario_modelo.Usuario).where(usuario_modelo.Usuario.nombre == usuario_actualizado.nombre, usuario_modelo.Usuario.id != id)).first():
+        raise HTTPException(status_code = 400, detail = "el nombre de usuario ya esta en uso")
+    
+    if db.exec(select(usuario_modelo.Usuario).where(usuario_modelo.Usuario.email == usuario_actualizado.email, usuario_modelo.Usuario.id != id)).first():
+        raise HTTPException(status_code = 400, detail = "el email ya esta en uso")
 
     usuario.nombre = usuario_actualizado.nombre
     usuario.email = usuario_actualizado.email
@@ -62,11 +71,15 @@ def actualizar_usuario(id: PARAMETROS_ID, usuario_actualizado: usuario_modelo.Us
 def borrar_usuario(id: PARAMETROS_ID, db: Session = Depends(get_db)):
 
     usuario = db.exec(select(usuario_modelo.Usuario).where(usuario_modelo.Usuario.id == id)).first()
+    suscripciones_del_usuario = db.exec(select(suscripcion_modelo.Suscripcion).where(suscripcion_modelo.Suscripcion.usuario_id == id))
 
     if usuario is None:
         raise HTTPException(status_code = 404, detail = "el id no coincide con ningun usuario")
 
-    db.delete(usuario)
+    for suscripcion in suscripciones_del_usuario:
+        db.delete(suscripcion)
+
+    db.delete(usuario)    
     db.commit()
 
     return usuario

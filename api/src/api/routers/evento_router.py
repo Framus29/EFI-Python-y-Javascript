@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
 from ..database import get_db
 
-from ..models import evento_modelo, anidados
+from ..models import evento_modelo, anidados, organizacion_modelo
 from ..schemas.esquemas import PARAMETROS_ID
 
 
@@ -30,6 +30,9 @@ def crear_evento(nuevo_evento: evento_modelo.EventoCreate, db: Session = Depends
 
     db_evento = evento_modelo.Evento.model_validate(nuevo_evento)
 
+    if not db.exec(select(organizacion_modelo.Organizacion).where(organizacion_modelo.Organizacion.id == nuevo_evento.organizacion_id)).first():
+        raise HTTPException(status_code = 400, detail = "la organizacion no existe")
+
     db.add(db_evento)
     db.commit()
     db.refresh(db_evento)
@@ -44,6 +47,9 @@ def actualizar_evento(id: PARAMETROS_ID, evento_actualizado: evento_modelo.Event
 
     if not evento:
         raise HTTPException(status_code = 404, detail = "el id no coincide con ningun evento")
+
+    if not db.exec(select(organizacion_modelo.Organizacion).where(organizacion_modelo.Organizacion.id == evento_actualizado.organizacion_id)).first():
+        raise HTTPException(status_code = 400, detail = "la organizacion no existe")
 
     evento.nombre = evento_actualizado.nombre
     evento.precio_entrada = evento_actualizado.precio_entrada
