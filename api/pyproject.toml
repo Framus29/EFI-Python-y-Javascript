@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
+    "fastapi-pagination>=0.16.1",
     "fastapi[standard]>=0.143.3",
     "sqlmodel>=0.0.48",
 ]
