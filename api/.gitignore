@@ -1,4 +1,1 @@
-src/api/__pycache__
-src/api/models/__pycache__
-src/api/routers/__pycache__
-src/api/schemas/__pycache__
+__pycache__/
