@@ -1,37 +1,59 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlmodel import Session, select
-from ..database import get_db
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlmodel import paginate
 
+from ..database import get_db
 from ..models import evento_modelo, anidados, organizacion_modelo
 from ..schemas.esquemas import PARAMETROS_ID
 
 
-router = APIRouter(prefix = "/eventos", tags = ["eventos"])
+router = APIRouter(
+    prefix = "/eventos",
+    tags = ["eventos"]
+    )
 
 
-@router.get("/", response_model = list[anidados.EventoPublic])
-def mostrar_database_evento(db: Session = Depends(get_db)):
-    return db.exec(select(evento_modelo.Evento)).all()
+@router.get("/", response_model = Page[anidados.EventoPublic])
+def mostrar_database_evento(
+    db: Session = Depends(get_db),
+    ):
+
+    query = select(evento_modelo.Evento)
+
+    return paginate(db, query)
 
 
 @router.get("/{id}", response_model = anidados.EventoNested)
-def mostrar_evento(id: PARAMETROS_ID, db: Session = Depends(get_db)):
+def mostrar_evento(
+    id: PARAMETROS_ID,
+    db: Session = Depends(get_db)
+    ):
 
     evento_buscado = db.exec(select(evento_modelo.Evento).where(evento_modelo.Evento.id == id)).first()
 
     if evento_buscado is None:
-        raise HTTPException(status_code = 404, detail = "el id no coincide con ningun evento")
+        raise HTTPException(
+            status_code = 404,
+            detail = "el id no coincide con ningun evento"
+            )
 
     return evento_buscado
 
 
 @router.post("/", response_model = evento_modelo.EventoPublic)
-def crear_evento(nuevo_evento: evento_modelo.EventoCreate, db: Session = Depends(get_db)):
+def crear_evento(
+    nuevo_evento: evento_modelo.EventoCreate,
+    db: Session = Depends(get_db)
+    ):
 
     db_evento = evento_modelo.Evento.model_validate(nuevo_evento)
 
     if not db.exec(select(organizacion_modelo.Organizacion).where(organizacion_modelo.Organizacion.id == nuevo_evento.organizacion_id)).first():
-        raise HTTPException(status_code = 400, detail = "la organizacion no existe")
+        raise HTTPException(
+            status_code = 400,
+            detail = "la organizacion no existe"
+            )
 
     db.add(db_evento)
     db.commit()
@@ -41,15 +63,25 @@ def crear_evento(nuevo_evento: evento_modelo.EventoCreate, db: Session = Depends
 
 
 @router.put("/{id}", response_model = evento_modelo.EventoPublic)
-def actualizar_evento(id: PARAMETROS_ID, evento_actualizado: evento_modelo.EventoCreate, db: Session = Depends(get_db)):
+def actualizar_evento(
+    id: PARAMETROS_ID,
+    evento_actualizado: evento_modelo.EventoCreate,
+    db: Session = Depends(get_db)
+    ):
 
     evento = db.exec(select(evento_modelo.Evento).where(evento_modelo.Evento.id == id)).first()
 
     if not evento:
-        raise HTTPException(status_code = 404, detail = "el id no coincide con ningun evento")
+        raise HTTPException(
+            status_code = 404,
+            detail = "el id no coincide con ningun evento"
+            )
 
     if not db.exec(select(organizacion_modelo.Organizacion).where(organizacion_modelo.Organizacion.id == evento_actualizado.organizacion_id)).first():
-        raise HTTPException(status_code = 400, detail = "la organizacion no existe")
+        raise HTTPException(
+            status_code = 400,
+            detail = "la organizacion no existe"
+            )
 
     evento.nombre = evento_actualizado.nombre
     evento.precio_entrada = evento_actualizado.precio_entrada
@@ -66,12 +98,18 @@ def actualizar_evento(id: PARAMETROS_ID, evento_actualizado: evento_modelo.Event
 
 
 @router.delete("/{id}", response_model = evento_modelo.EventoPublic)
-def borrar_evento(id: PARAMETROS_ID, db: Session = Depends(get_db)):
+def borrar_evento(
+    id: PARAMETROS_ID,
+    db: Session = Depends(get_db)
+    ):
 
     evento = db.exec(select(evento_modelo.Evento).where(evento_modelo.Evento.id == id)).first()
 
     if evento is None:
-        raise HTTPException(status_code = 404, detail = "el id no coincide con ningun evento")
+        raise HTTPException(
+            status_code = 404,
+            detail = "el id no coincide con ningun evento"
+            )
 
     db.delete(evento)
     db.commit()

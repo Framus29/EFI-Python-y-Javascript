@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from sqlmodel import SQLModel
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination import add_pagination
 
 from .routers.usuario_router import router as usuario_router
 from .routers.organizacion_router import router as organizacion_router
@@ -26,6 +27,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+
+add_pagination(app)
 
 
 SQLModel.metadata.create_all(bind = engine)
