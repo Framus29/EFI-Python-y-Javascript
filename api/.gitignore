@@ -1,0 +1,4 @@
+src/api/__pycache__
+src/api/models/__pycache__
+src/api/routers/__pycache__
+src/api/schemas/__pycache__
