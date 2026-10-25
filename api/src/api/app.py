@@ -13,7 +13,9 @@ from .models import anidados, evento_modelo, organizacion_modelo, suscripcion_mo
 
 app = FastAPI()
 
-app.title = "Practico 7 - Tablas Relacionadas"
+app.title = "EFI Segundo anio - Python y Javascript"
+
+app.description = "En esta EFI tenemos como objetivo crear una pagina web desde cero, incluyendo la API, la logica JS y el Front."
 
 app.include_router(usuario_router)
 app.include_router(organizacion_router)
@@ -22,7 +24,7 @@ app.include_router(suscripcion_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # cambiar antes de presentar la EFI
+    allow_origins=["*"], # siendo un entorno de pruebas, habilito cualquier puerto
     allow_credentials = False,
     allow_methods=["*"],
     allow_headers=["*"]
