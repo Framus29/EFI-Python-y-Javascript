@@ -5,7 +5,7 @@ from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlmodel import paginate
 
 from ..models import usuario_modelo, anidados, suscripcion_modelo
-from ..schemas.esquemas import PARAMETROS_ID
+from ..schemas.esquemas import PARAMETROS_ID, not_found
 
 
 router = APIRouter(
@@ -24,7 +24,7 @@ def mostrar_database_usuario(
     return paginate(db, query)
 
 
-@router.get("/{id}", response_model = anidados.UsuarioNested)
+@router.get("/{id}", response_model = anidados.UsuarioNested, responses = not_found)
 def mostrar_usuario(
     id: PARAMETROS_ID,
     db: Session = Depends(get_db)
@@ -41,7 +41,7 @@ def mostrar_usuario(
     return usuario_buscado
 
 
-@router.post("/", response_model = usuario_modelo.UsuarioPublic)
+@router.post("/", response_model = usuario_modelo.UsuarioPublic, responses = not_found)
 def crear_usuario(
     nuevo_usuario: usuario_modelo.UsuarioCreate,
     db: Session = Depends(get_db)
@@ -67,7 +67,7 @@ def crear_usuario(
     return db_usuario
 
 
-@router.put("/{id}", response_model = usuario_modelo.UsuarioPublic)
+@router.put("/{id}", response_model = usuario_modelo.UsuarioPublic, responses = not_found)
 def actualizar_usuario(
     id: PARAMETROS_ID,
     usuario_actualizado: usuario_modelo.UsuarioCreate,
@@ -105,7 +105,7 @@ def actualizar_usuario(
     return usuario
 
 
-@router.delete("/{id}", response_model = usuario_modelo.UsuarioPublic)
+@router.delete("/{id}", response_model = usuario_modelo.UsuarioPublic, responses = not_found)
 def borrar_usuario(
     id: PARAMETROS_ID,
     db: Session = Depends(get_db)

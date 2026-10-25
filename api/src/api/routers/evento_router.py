@@ -5,7 +5,7 @@ from fastapi_pagination.ext.sqlmodel import paginate
 
 from ..database import get_db
 from ..models import evento_modelo, anidados, organizacion_modelo
-from ..schemas.esquemas import PARAMETROS_ID
+from ..schemas.esquemas import PARAMETROS_ID, not_found
 
 
 router = APIRouter(
@@ -24,7 +24,7 @@ def mostrar_database_evento(
     return paginate(db, query)
 
 
-@router.get("/{id}", response_model = anidados.EventoNested)
+@router.get("/{id}", response_model = anidados.EventoNested, responses = not_found)
 def mostrar_evento(
     id: PARAMETROS_ID,
     db: Session = Depends(get_db)
@@ -41,7 +41,7 @@ def mostrar_evento(
     return evento_buscado
 
 
-@router.post("/", response_model = evento_modelo.EventoPublic)
+@router.post("/", response_model = evento_modelo.EventoPublic, responses = not_found)
 def crear_evento(
     nuevo_evento: evento_modelo.EventoCreate,
     db: Session = Depends(get_db)
@@ -62,7 +62,7 @@ def crear_evento(
     return db_evento
 
 
-@router.put("/{id}", response_model = evento_modelo.EventoPublic)
+@router.put("/{id}", response_model = evento_modelo.EventoPublic, responses = not_found)
 def actualizar_evento(
     id: PARAMETROS_ID,
     evento_actualizado: evento_modelo.EventoCreate,
@@ -97,7 +97,7 @@ def actualizar_evento(
     return evento
 
 
-@router.delete("/{id}", response_model = evento_modelo.EventoPublic)
+@router.delete("/{id}", response_model = evento_modelo.EventoPubli, responses = not_found)
 def borrar_evento(
     id: PARAMETROS_ID,
     db: Session = Depends(get_db)

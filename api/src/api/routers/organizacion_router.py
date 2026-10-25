@@ -5,7 +5,7 @@ from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlmodel import paginate
 
 from ..models import organizacion_modelo, anidados, evento_modelo, suscripcion_modelo
-from ..schemas.esquemas import PARAMETROS_ID
+from ..schemas.esquemas import PARAMETROS_ID, not_found
 
 
 router = APIRouter(
@@ -24,7 +24,7 @@ def mostrar_database_organizacion(
     return paginate(db, query)
 
 
-@router.get("/{id}", response_model = anidados.OrganizacionNested)
+@router.get("/{id}", response_model = anidados.OrganizacionNested, responses = not_found)
 def mostrar_organizacion(
     id: PARAMETROS_ID,
     db: Session = Depends(get_db)
@@ -41,7 +41,7 @@ def mostrar_organizacion(
     return organizacion_buscado
 
 
-@router.post("/", response_model = organizacion_modelo.OrganizacionPublic)
+@router.post("/", response_model = organizacion_modelo.OrganizacionPublic, responses = not_found)
 def crear_organizacion(
     nuevo_organizacion: organizacion_modelo.OrganizacionCreate,
     db: Session = Depends(get_db)
@@ -62,7 +62,7 @@ def crear_organizacion(
     return db_organizacion
 
 
-@router.put("/{id}", response_model = organizacion_modelo.OrganizacionPublic)
+@router.put("/{id}", response_model = organizacion_modelo.OrganizacionPublic, responses = not_found)
 def actualizar_organizacion(
     id: PARAMETROS_ID,
     organizacion_actualizado: organizacion_modelo.OrganizacionCreate,
@@ -85,7 +85,7 @@ def actualizar_organizacion(
     return organizacion
 
 
-@router.delete("/{id}", response_model = organizacion_modelo.OrganizacionPublic)
+@router.delete("/{id}", response_model = organizacion_modelo.OrganizacionPublic, responses = not_found)
 def borrar_organizacion(
     id: PARAMETROS_ID,
     db: Session = Depends(get_db)

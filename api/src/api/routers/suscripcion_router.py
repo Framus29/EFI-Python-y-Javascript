@@ -6,7 +6,7 @@ from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlmodel import paginate
 
 from ..models import suscripcion_modelo, anidados, usuario_modelo, organizacion_modelo
-from ..schemas.esquemas import PARAMETROS_ID
+from ..schemas.esquemas import PARAMETROS_ID, not_found
 
 
 router = APIRouter(prefix = "/suscripciones", tags = ["suscripciones"])
@@ -22,7 +22,7 @@ def mostrar_database_suscripcion(
     return paginate(db, query)
 
 
-@router.get("/{id}", response_model = anidados.SuscripcionNested)
+@router.get("/{id}", response_model = anidados.SuscripcionNested, responses = not_found)
 def mostrar_suscripcion(
     id: PARAMETROS_ID,
     db: Session = Depends(get_db)
@@ -39,7 +39,7 @@ def mostrar_suscripcion(
     return suscripcion_buscado
 
 
-@router.post("/", response_model = suscripcion_modelo.SuscripcionPublic)
+@router.post("/", response_model = suscripcion_modelo.SuscripcionPublic, responses = not_found)
 def crear_suscripcion(nueva_suscripcion: suscripcion_modelo.SuscripcionCreate, db: Session = Depends(get_db)):
 
     if not db.exec(select(usuario_modelo.Usuario).where(usuario_modelo.Usuario.id == nueva_suscripcion.usuario_id)).first():
@@ -71,7 +71,7 @@ def crear_suscripcion(nueva_suscripcion: suscripcion_modelo.SuscripcionCreate, d
     return db_suscripcion
 
 
-@router.delete("/{id}", response_model = suscripcion_modelo.SuscripcionPublic)
+@router.delete("/{id}", response_model = suscripcion_modelo.SuscripcionPublic, responses = not_found)
 def borrar_suscripcion(
     id: PARAMETROS_ID,
     db: Session = Depends(get_db)
