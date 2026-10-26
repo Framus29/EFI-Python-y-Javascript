@@ -1,15 +1,14 @@
-# EFI-Python-y-JavaScript
+<h1>EFI-Python-y-JavaScript</h1>
 
-EFI de Python y JavaScript de segundo año
 
-"El Imaginario"
-Cartelera colaborativa de eventos, talleres e itinerarios culturales.Creamos una interfaz para aglomerar los establecimientos/eventos culturales/recreativos de Río Cuarto en una misma página web y aplicación
+<h3>"El Imaginario"</h3>
+Cartelera colaborativa de eventos, talleres e itinerarios culturales. Creamos una interfaz para aglomerar los establecimientos/eventos culturales/recreativos de Río Cuarto en una misma página web y aplicación
 
 API utilizada: Fastapi
 
 Pasos para ejecutar la aplicación:
 
-REACT:
+<h2>REACT:</h2>
 
 1-Clonar repositorio
 
@@ -22,46 +21,46 @@ REACT:
 
 3-Para ejecutar la aplicacion:
 
-  *si usas vite:
+  -si usas vite:
   
     npm run dev
     
-  *si usas Create React App:
+  -si usas Create React App:
 
     npm start
   
 4-Abre tu navegador web e ingresa a la dirección local que aparece en la terminal.
 
-FastAPI:
+<h2>FastAPI:</h2>
 
-1-Clonar repositorio
+1-Instalar uv (solo la primera vez si no lo tienes instalado):
 
-    git clone https://github.com/Framus29/EFI-Python-y-Javascript
-    cd <nombre-de-la-carpeta>
+    curl -LsSf [https://astral.sh/uv/install.sh](https://astral.sh/uv/install.sh) | sh
 
-2-Crear entorno virtual:
+2-Crear el proyecto e ingresar:
 
-  *En windows:
+    uv init <nombre_archivo>
+    cd <nombre_archivo>
   
-    python -m venv venv
-    venv\Scripts\activate
+3-Instalar FastAPI en modo standard:
 
-  En macOS/Linux:
+    uv add "fastapi[standard]"
 
-    python3 -m venv venv
-    source venv/bin/activate
+4-Crear el archivo main.py dentro de la estructura de carpetas:
 
-3-Instalar las dependencias:
+    touch src/<nombre_archivo>/main.py
 
-    pip install -r requirements.txt
+5-Instalar el proyecto en modo editable dentro del .venv:(Permite que FastAPI detecte automáticamente el código dentro de src/)
 
-4-Ejecutar la aplicación:
+    uv pip install -e .
 
-    uvicorn main:app --reload
+6-Levantar el servidor:
 
-5-Abre tu navegador web e ingresa a la dirección local que aparece en la terminal.
+    uv run fastapi dev
+7-Abre tu navegador web e ingresa a la dirección local que aparece en la terminal.
   
-Integrantes: 
+<h4>Integrantes: 
   -Noel Rüegger Albert
   -Lucas Ezequiel Lorenzoni Brown
   -Francisco Sbarra
+</h4>
